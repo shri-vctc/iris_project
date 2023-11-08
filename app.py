@@ -1,4 +1,4 @@
-from flask import Flask,jsonify
+from flask import Flask,jsonify,render_template,request
 import pickle
 
 app = Flask(__name__)
@@ -6,20 +6,24 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "deafult API"
+    return render_template("index.html")
 
-@app.route('/predict')
+
+
+@app.route('/predict', methods= ["post"])
 def iris_pred():
      
     with open("model.pkl","rb") as model:
         ml_model = pickle.load(model)
     
-    SepalLengthCm = 6 
-    SepalWidthCm = 4.8
-    PetalLengthCm = 5.2
-    PetalWidthCm = 3.75
+    data = request.form
+    SepalLengthCm = eval(data["SepalLengthCm"])
+    SepalWidthCm = eval(data["SepalWidthCm"])
+    PetalLengthCm = eval(data["PetalLengthCm"])
+    PetalWidthCm = eval(data["PetalWidthCm"])
 
     result = ml_model.predict([[SepalLengthCm, SepalWidthCm,PetalLengthCm,PetalWidthCm]])
+    
     if result[0] == 2:
         iris_flower = "Iris-virginica" 
     if result[0] == 0:
